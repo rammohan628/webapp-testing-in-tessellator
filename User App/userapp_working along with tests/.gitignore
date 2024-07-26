@@ -1,0 +1,8 @@
+node_modules/
+react-app/node_modules/
+.env
+git branch -M main
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
