@@ -32,14 +32,18 @@ testcasespassed=$(grep -oP '^\s*[0-9]+(?=\spassed)' output.txt)
 #echo $testcasespassed
 
 # Calculate the grade value based on the number of tests run and passed
-if [ -n "$totaltests" ] && [ -n "$testcasespassed" ]; then
-    gradevalue=$((100 * testcasespassed / totaltests))
+if [ -n "$totaltests" ]; then
+    if [ -n "$testcasespassed" ]; then
+        gradevalue=$((100 * testcasespassed / totaltests))
+    else
+        gradevalue=0
+    fi
 else
-    echo "Error: Unable to extract integer values for totaltests or testcasespassed."
+    echo "Error: Unable to extract integer values for totaltests."
     exit 1
 fi
 
-# Output all lines except the last 5 lines of output.txt
+# Output all lines except the last 3 lines of output.txt
 tail -n -3 output.txt
 
 # Check the grade value and set the appropriate grade
@@ -53,6 +57,7 @@ fi
 
 # Output the grade
 echo "Grade :=>>$grade"
+
 
 
 EOF
