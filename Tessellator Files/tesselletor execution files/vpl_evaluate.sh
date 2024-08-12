@@ -1,23 +1,20 @@
 #!/bin/bash
-. common_script.sh
-cat common_script.sh > vpl_execution
-
-echo "#!/bin/bash">> bashscript
-
-#export PATH="/usr/local/bin:$PATH"
-echo "cp -r /usr/local/customlibs/test ." >> bashscript
-echo "cp app.spec.ts test/tests/app.spec.ts" >> bashscript
-#echo "ls" >> bashscript
-
+cp -r /usr/local/customlibs/test .
+cp app.spec.ts test/tests/app.spec.ts
+#cp playwright.config.js test/playwright.config.js
 url=$(grep -oP '(?<=value=")[^"]*(?=")' url.xml)
-echo "url=$url" >> bashscript
-echo "cd test" >> bashscript
-echo "$url"
-echo "PLAYWRIGHT_BROWSERS_PATH=/usr/local/customlibs/.cache/ms-playwright BASE_URL=$url npx playwright test tests/app.spec.ts > output.txt" >> bashscript
-echo "cp output.txt ../" >> bashscript
-#echo "cat output.txt" >> bashscript
-bash bashscript
-
+# Check if the URL was successfully extracted
+if [ -z "$url" ]; then
+    echo "Failed to extract URL from url.xml"
+    exit 1
+fi
+#ls 
+# Print the extracted URL
+#export PLAYWRIGHT_BROWSERS_PATH=/usr/local/customlibs/.cache/ms-playwright
+#echo $PLAYWRIGHT_BROWSERS_PATH
+echo "Extracted URL: $url"
+echo "cd test/tests && PLAYWRIGHT_BROWSERS_PATH=/usr/local/customlibs/.cache/ms-playwright/ BASE_URL=$url npx playwright test app.spec.ts  > output.txt" > vpl_execution
+echo "cp output.txt ../../ && cat output.txt" >> vpl_execution
 cat >>vpl_execution << 'EOF'
 
 
@@ -28,7 +25,7 @@ totaltests=$(grep -oP '(?<=Running )[0-9]+' output.txt)
 #echo $totaltests
 #echo "_____________"
 # Extract the number of passed tests from output.txt
-testcasespassed=$(grep -oP '^\s*[0-9]+(?=\spassed)' output.txt)
+testcasespassed=$(grep -oP '(^\s*[0-9]+(?=\spassed)) | (?<=\s)[0-9]+(?=\spassed)' output.txt)
 #echo $testcasespassed
 
 # Calculate the grade value based on the number of tests run and passed
@@ -57,8 +54,5 @@ fi
 
 # Output the grade
 echo "Grade :=>>$grade"
-
-
-
 EOF
 chmod +x vpl_execution
