@@ -1,2 +1,0 @@
-<!-- create a to do application using html and run code in vs code live server and add url in the xml value tag -->
-<url value="http://192.168.0.138:5500"></url>
